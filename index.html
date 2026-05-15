@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 
 <title>🤍</title>
@@ -14,14 +14,14 @@
   box-sizing:border-box;
   -webkit-user-select:none;
   user-select:none;
-  -webkit-touch-callout:none;
   -webkit-tap-highlight-color:transparent;
 }
 
 body{
   width:100%;
-  height:100dvh;
-  overflow:hidden;
+  min-height:100dvh;
+  overflow-x:hidden;
+  overflow-y:auto;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   background:linear-gradient(180deg,#c66a95,#f6a7c0,#ffdbe7);
   display:flex;
@@ -30,6 +30,7 @@ body{
   color:white;
   position:relative;
   transition:background 1s ease;
+  touch-action:manipulation;
 }
 
 .container{
@@ -68,6 +69,7 @@ h1{
   height:150px;
   border-radius:25px;
   object-fit:contain;
+  background:transparent;
   border:3px solid rgba(255,255,255,0.7);
   box-shadow:0 0 25px rgba(255,255,255,0.25);
   transition:
@@ -236,10 +238,13 @@ h1{
 
   <div class="game-area" id="gameArea">
 
+    <!-- IMPORTANT -->
+    <!-- make sure kiss.png exists in same repo -->
     <img
-      src="kiss.png"
+      src="Kiss.png"
       id="face"
       class="face"
+      draggable="false"
     />
 
   </div>
@@ -292,6 +297,12 @@ const reactions = [
   "closerrr 😳"
 ];
 
+// IMAGE ERROR DEBUG
+face.onerror = function(){
+  subtitle.innerHTML = "Image not found 😭";
+  console.log("Kiss.png not loading");
+};
+
 // initial position
 moveFace();
 
@@ -321,8 +332,8 @@ function moveFace(){
   const areaWidth = gameArea.clientWidth - 160;
   const areaHeight = gameArea.clientHeight - 160;
 
-  const x = Math.random()*areaWidth;
-  const y = Math.random()*areaHeight;
+  const x = Math.max(0, Math.random()*areaWidth);
+  const y = Math.max(0, Math.random()*areaHeight);
 
   face.style.left = x+"px";
   face.style.top = y+"px";
@@ -351,6 +362,8 @@ face.addEventListener("click", catchFace);
 face.addEventListener("touchstart", catchFace);
 
 function catchFace(e){
+
+  e.preventDefault();
 
   if(gameFinished) return;
 
