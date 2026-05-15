@@ -29,7 +29,7 @@ body{
   align-items:center;
   color:white;
   position:relative;
-  transition:background 1s ease;
+  transition:background 1s ease, transform 0.2s ease;
   touch-action:manipulation;
 }
 
@@ -77,11 +77,13 @@ h1{
     top 0.45s ease,
     transform 0.3s ease,
     width 1s ease,
-    height 1s ease;
+    height 1s ease,
+    box-shadow 0.3s ease;
 }
 
-.face:active{
-  transform:scale(0.96);
+.face.final-face{
+  width:260px !important;
+  height:260px !important;
 }
 
 .reaction{
@@ -89,6 +91,7 @@ h1{
   margin-top:10px;
   font-size:1rem;
   opacity:0.95;
+  transition:0.3s;
 }
 
 .progress-wrap{
@@ -168,6 +171,28 @@ h1{
   pointer-events:none;
 }
 
+.sparkle{
+  position:absolute;
+  font-size:18px;
+  animation:sparkleFloat 4s linear forwards;
+  opacity:0.8;
+  pointer-events:none;
+}
+
+@keyframes sparkleFloat{
+  0%{
+    transform:translateY(0) scale(0.5);
+    opacity:0;
+  }
+  30%{
+    opacity:1;
+  }
+  100%{
+    transform:translateY(-80px) scale(1);
+    opacity:0;
+  }
+}
+
 @keyframes pop{
   0%{
     transform:scale(0.2);
@@ -212,11 +237,6 @@ h1{
     #7a395d 100%);
 }
 
-.final-face{
-  width:260px !important;
-  height:260px !important;
-}
-
 </style>
 </head>
 
@@ -238,10 +258,8 @@ h1{
 
   <div class="game-area" id="gameArea">
 
-    <!-- IMPORTANT -->
-    <!-- make sure kiss.png exists in same repo -->
     <img
-      src="Kiss.png"
+      src="kiss.png"
       id="face"
       class="face"
       draggable="false"
@@ -287,29 +305,30 @@ let catches = 0;
 let gameFinished = false;
 let holdInterval;
 let holdValue = 0;
+let heartbeatInterval;
 
 const reactions = [
-  "hehe 😚",
-  "too slowww 🤭",
-  "you almost got me 💋",
-  "again again 🤍",
+  "stoppp 😳",
   "ponnuuuu 🫶",
-  "closerrr 😳"
+  "you caught me 💋",
+  "again again 😚",
+  "you're making me blush 🤍",
+  "closerrrr 😳"
 ];
 
-// IMAGE ERROR DEBUG
+// image error helper
 face.onerror = function(){
-  subtitle.innerHTML = "Image not found 😭";
-  console.log("Kiss.png not loading");
+  subtitle.innerHTML = "kiss.png not found 😭";
 };
 
-// initial position
+// initial move
 moveFace();
 
 // floating hearts
 function createHeart(){
 
   const heart = document.createElement("div");
+
   heart.classList.add("heart");
   heart.innerHTML = "🤍";
 
@@ -326,7 +345,7 @@ function createHeart(){
 
 setInterval(createHeart,600);
 
-// move face
+// face movement
 function moveFace(){
 
   const areaWidth = gameArea.clientWidth - 160;
@@ -339,7 +358,7 @@ function moveFace(){
   face.style.top = y+"px";
 }
 
-// kiss burst
+// kiss effect
 function createKiss(x,y){
 
   const kiss = document.createElement("div");
@@ -357,7 +376,29 @@ function createKiss(x,y){
   },800);
 }
 
-// tap face
+// sparkle effect
+function createSparkle(){
+
+  const sparkle = document.createElement("div");
+
+  sparkle.classList.add("sparkle");
+
+  sparkle.innerHTML = Math.random() > 0.5 ? "✨" : "🤍";
+
+  sparkle.style.left =
+    (Math.random()*window.innerWidth)+"px";
+
+  sparkle.style.top =
+    (window.innerHeight-100)+"px";
+
+  document.body.appendChild(sparkle);
+
+  setTimeout(()=>{
+    sparkle.remove();
+  },4000);
+}
+
+// catch face
 face.addEventListener("click", catchFace);
 face.addEventListener("touchstart", catchFace);
 
@@ -374,6 +415,23 @@ function catchFace(e){
   reaction.innerHTML =
     reactions[Math.floor(Math.random()*reactions.length)];
 
+  // face blush glow
+  face.style.boxShadow =
+    "0 0 40px rgba(255,255,255,0.6)";
+
+  setTimeout(()=>{
+    face.style.boxShadow =
+      "0 0 25px rgba(255,255,255,0.25)";
+  },250);
+
+  // slight tilt
+  face.style.transform =
+    `rotate(${Math.random()*12-6}deg) scale(1.08)`;
+
+  setTimeout(()=>{
+    face.style.transform = "scale(1)";
+  },180);
+
   const rect = face.getBoundingClientRect();
 
   createKiss(
@@ -381,16 +439,16 @@ function catchFace(e){
     rect.top + rect.height/2
   );
 
-  // bounce
-  face.style.transform = "scale(1.08)";
-
-  setTimeout(()=>{
-    face.style.transform = "scale(1)";
-  },150);
-
   if(navigator.vibrate){
-    navigator.vibrate(30);
+    navigator.vibrate(25);
   }
+
+  // slowly grow face
+  face.style.width =
+    (150 + catches*8)+"px";
+
+  face.style.height =
+    (150 + catches*8)+"px";
 
   if(catches >= 5){
 
@@ -402,6 +460,7 @@ function catchFace(e){
   }
 }
 
+// finish game
 function finishGame(){
 
   gameFinished = true;
@@ -436,22 +495,42 @@ function finishGame(){
 
 // HOLD TO KISS
 
+function startHeartbeat(){
+
+  heartbeatInterval = setInterval(()=>{
+
+    document.body.style.transform = "scale(1.01)";
+
+    setTimeout(()=>{
+      document.body.style.transform = "scale(1)";
+    },180);
+
+    if(navigator.vibrate){
+      navigator.vibrate(12);
+    }
+
+  },800);
+}
+
+function stopHeartbeat(){
+  clearInterval(heartbeatInterval);
+}
+
 function startHold(){
 
   holdValue = 0;
+
+  startHeartbeat();
 
   holdInterval = setInterval(()=>{
 
     holdValue += 2;
 
-    holdFill.style.width = holdValue+"%";
+    holdFill.style.width =
+      holdValue+"%";
 
     face.style.transform =
-      `translate(-50%, -50%) scale(${1 + holdValue/200})`;
-
-    if(navigator.vibrate && holdValue % 20 === 0){
-      navigator.vibrate(15);
-    }
+      `translate(-50%, -50%) scale(${1 + holdValue/180})`;
 
     if(holdValue >= 100){
 
@@ -467,6 +546,8 @@ function stopHold(){
 
   clearInterval(holdInterval);
 
+  stopHeartbeat();
+
   if(holdValue < 100){
 
     holdValue = 0;
@@ -475,10 +556,19 @@ function stopHold(){
 
     face.style.transform =
       "translate(-50%, -50%) scale(1.03)";
+
+    reaction.innerHTML =
+      "awh come back 😭";
+
+    setTimeout(()=>{
+      reaction.innerHTML = "";
+    },1200);
   }
 }
 
 function finalKiss(){
+
+  stopHeartbeat();
 
   subtitle.innerHTML =
     "Mwaaaaaahhh 💋";
@@ -486,10 +576,14 @@ function finalKiss(){
   message.innerHTML =
     "I miss you, ponnu... 🤍<br><br>" +
     "So until I can kiss you for real,<br>" +
-    "you'll have to keep this one.";
+    "you'll have to keep this one.<br><br>" +
+    "Now give the phone a tiny kiss 😚";
 
   document.body.style.background =
     "radial-gradient(circle at center,#ffd1df 0%,#c96b97 50%,#5f2746 100%)";
+
+  // slow sparkles
+  setInterval(createSparkle,500);
 
   if(navigator.vibrate){
     navigator.vibrate([80,40,80]);
