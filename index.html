@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 
-<!-- subtle title -->
 <title>🤍</title>
 
 <style>
+
 *{
   margin:0;
   padding:0;
@@ -15,13 +15,15 @@
   -webkit-user-select:none;
   user-select:none;
   -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
-  height:100vh;
+  width:100%;
+  height:100dvh;
   overflow:hidden;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  background:linear-gradient(160deg,#c96c9d,#f7a8c0,#ffd9e5);
+  background:linear-gradient(180deg,#c66a95,#f6a7c0,#ffdbe7);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -33,30 +35,31 @@ body{
 .container{
   width:100%;
   max-width:420px;
-  text-align:center;
-  z-index:2;
   padding:20px;
+  text-align:center;
+  position:relative;
+  z-index:2;
 }
 
 h1{
-  font-size:2.5rem;
-  margin-bottom:12px;
+  font-size:2.4rem;
+  margin-bottom:10px;
   text-shadow:0 0 15px rgba(255,255,255,0.25);
 }
 
 .subtitle{
-  font-size:1.1rem;
+  font-size:1.05rem;
   opacity:0.95;
-  margin-bottom:20px;
-  min-height:38px;
+  min-height:35px;
+  margin-bottom:15px;
+  transition:0.4s;
 }
 
-.center-area{
+.game-area{
   position:relative;
-  height:320px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  width:100%;
+  height:350px;
+  overflow:hidden;
 }
 
 .face{
@@ -67,44 +70,49 @@ h1{
   object-fit:contain;
   border:3px solid rgba(255,255,255,0.7);
   box-shadow:0 0 25px rgba(255,255,255,0.25);
-  transition:all 0.9s ease;
+  transition:
+    left 0.45s ease,
+    top 0.45s ease,
+    transform 0.3s ease,
+    width 1s ease,
+    height 1s ease;
 }
 
-.face.final{
-  width:260px;
-  height:260px;
-  transform:scale(1.03);
-  box-shadow:0 0 55px rgba(255,255,255,0.4);
+.face:active{
+  transform:scale(0.96);
 }
 
-.kiss-btn{
+.reaction{
+  height:30px;
   margin-top:10px;
-  padding:15px 28px;
-  border:none;
-  border-radius:40px;
-  background:rgba(255,255,255,0.18);
-  backdrop-filter:blur(10px);
-  color:white;
   font-size:1rem;
+  opacity:0.95;
+}
+
+.progress-wrap{
+  width:220px;
+  height:10px;
+  background:rgba(255,255,255,0.25);
+  border-radius:20px;
+  overflow:hidden;
+  margin:12px auto 0;
+}
+
+.progress{
+  width:0%;
+  height:100%;
+  background:white;
+  border-radius:20px;
   transition:0.3s ease;
 }
 
-.kiss-btn:active{
-  transform:scale(0.95);
-}
-
-.kiss-btn.hidden{
-  opacity:0;
-  pointer-events:none;
-}
-
 .message{
-  margin-top:22px;
+  margin-top:20px;
+  line-height:1.7;
   font-size:1rem;
-  line-height:1.6;
   opacity:0;
-  transform:translateY(10px);
-  transition:all 1.2s ease;
+  transform:translateY(15px);
+  transition:all 1s ease;
 }
 
 .message.show{
@@ -112,19 +120,72 @@ h1{
   transform:translateY(0);
 }
 
-.reaction{
-  height:28px;
-  margin-top:10px;
-  opacity:0.95;
+.hold-area{
+  margin-top:20px;
+  opacity:0;
+  pointer-events:none;
+  transition:1s ease;
+}
+
+.hold-area.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.hold-btn{
+  padding:15px 30px;
+  border:none;
+  border-radius:40px;
+  background:rgba(255,255,255,0.18);
+  color:white;
   font-size:1rem;
-  transition:0.3s;
+  backdrop-filter:blur(10px);
+}
+
+.hold-progress{
+  margin-top:14px;
+  width:220px;
+  height:10px;
+  background:rgba(255,255,255,0.2);
+  border-radius:20px;
+  overflow:hidden;
+  margin-inline:auto;
+}
+
+.hold-fill{
+  width:0%;
+  height:100%;
+  background:white;
+  transition:0.1s linear;
+}
+
+.kiss{
+  position:absolute;
+  font-size:32px;
+  animation:pop 0.8s ease forwards;
+  pointer-events:none;
+}
+
+@keyframes pop{
+  0%{
+    transform:scale(0.2);
+    opacity:0;
+  }
+  50%{
+    transform:scale(1.3);
+    opacity:1;
+  }
+  100%{
+    transform:translateY(-25px) scale(1);
+    opacity:0;
+  }
 }
 
 .heart{
   position:absolute;
   font-size:18px;
+  opacity:0.6;
   animation:float 7s linear infinite;
-  opacity:0.65;
 }
 
 @keyframes float{
@@ -141,45 +202,19 @@ h1{
   }
 }
 
-/* kiss pop */
-.kiss{
-  position:absolute;
-  font-size:32px;
-  animation:kissPop 1s ease forwards;
-  cursor:pointer;
+.dark-romantic{
+  background:
+    radial-gradient(circle at center,
+    #ffb6c9 0%,
+    #d27ba0 40%,
+    #7a395d 100%);
 }
 
-@keyframes kissPop{
-  0%{
-    transform:scale(0.3);
-    opacity:0;
-  }
-  40%{
-    opacity:1;
-  }
-  100%{
-    transform:scale(1.2);
-    opacity:0;
-  }
+.final-face{
+  width:260px !important;
+  height:260px !important;
 }
 
-/* love meter */
-.meter-wrap{
-  width:220px;
-  height:10px;
-  background:rgba(255,255,255,0.2);
-  border-radius:20px;
-  margin:12px auto 0;
-  overflow:hidden;
-}
-
-.meter{
-  width:0%;
-  height:100%;
-  background:white;
-  border-radius:20px;
-  transition:0.4s ease;
-}
 </style>
 </head>
 
@@ -190,16 +225,16 @@ h1{
   <h1>Ammuuuu 💋</h1>
 
   <div class="subtitle" id="subtitle">
-    Catch my kisses 😚
+    Catch me first 😚
   </div>
 
   <div class="reaction" id="reaction"></div>
 
-  <div class="meter-wrap">
-    <div class="meter" id="meter"></div>
+  <div class="progress-wrap">
+    <div class="progress" id="progress"></div>
   </div>
 
-  <div class="center-area">
+  <div class="game-area" id="gameArea">
 
     <img
       src="kiss.png"
@@ -209,14 +244,24 @@ h1{
 
   </div>
 
-  <button class="kiss-btn" id="btn" onclick="startGame()">
-    Start 💋
-  </button>
-
   <div class="message" id="message">
-    Mwaaaahhh 💋🤍<br><br>
-    I miss you, ponnu…<br>
-    So I’m sending you kisses until I can give you one for real.
+    Okay okay... you caught me 🤍<br><br>
+    Now come closer...
+  </div>
+
+  <div class="hold-area" id="holdArea">
+
+    <button
+      class="hold-btn"
+      id="holdBtn"
+    >
+      Hold to kiss 💋
+    </button>
+
+    <div class="hold-progress">
+      <div class="hold-fill" id="holdFill"></div>
+    </div>
+
   </div>
 
 </div>
@@ -224,142 +269,227 @@ h1{
 <script>
 
 const face = document.getElementById("face");
-const meter = document.getElementById("meter");
+const gameArea = document.getElementById("gameArea");
+const progress = document.getElementById("progress");
 const reaction = document.getElementById("reaction");
 const subtitle = document.getElementById("subtitle");
-const msg = document.getElementById("message");
-const btn = document.getElementById("btn");
+const message = document.getElementById("message");
+const holdArea = document.getElementById("holdArea");
+const holdBtn = document.getElementById("holdBtn");
+const holdFill = document.getElementById("holdFill");
 
-let running = false;
-let score = 0;
+let catches = 0;
+let gameFinished = false;
+let holdInterval;
+let holdValue = 0;
 
 const reactions = [
   "hehe 😚",
-  "you caught one 💋",
+  "too slowww 🤭",
+  "you almost got me 💋",
   "again again 🤍",
-  "closer... 😳",
   "ponnuuuu 🫶",
-  "mwaaaah 💋"
+  "closerrr 😳"
 ];
+
+// initial position
+moveFace();
 
 // floating hearts
 function createHeart(){
+
   const heart = document.createElement("div");
   heart.classList.add("heart");
   heart.innerHTML = "🤍";
 
   heart.style.left = Math.random()*100+"vw";
-  heart.style.animationDuration = (4+Math.random()*4)+"s";
+  heart.style.animationDuration =
+    (4+Math.random()*4)+"s";
 
   document.body.appendChild(heart);
 
-  setTimeout(()=>heart.remove(),8000);
+  setTimeout(()=>{
+    heart.remove();
+  },8000);
 }
-setInterval(createHeart,500);
+
+setInterval(createHeart,600);
 
 // move face
-function randomMove(){
-  const x = Math.random()*220 - 110;
-  const y = Math.random()*160 - 80;
+function moveFace(){
 
-  face.style.transform =
-    `translate(${x}px, ${y}px) rotate(${Math.random()*16-8}deg)`;
+  const areaWidth = gameArea.clientWidth - 160;
+  const areaHeight = gameArea.clientHeight - 160;
+
+  const x = Math.random()*areaWidth;
+  const y = Math.random()*areaHeight;
+
+  face.style.left = x+"px";
+  face.style.top = y+"px";
 }
 
-// create kiss
-function createKiss(){
+// kiss burst
+function createKiss(x,y){
 
   const kiss = document.createElement("div");
+
   kiss.classList.add("kiss");
   kiss.innerHTML = "💋";
 
-  kiss.style.left =
-    (Math.random()*(window.innerWidth-60))+"px";
-
-  kiss.style.top =
-    (Math.random()*(window.innerHeight-120))+"px";
+  kiss.style.left = x+"px";
+  kiss.style.top = y+"px";
 
   document.body.appendChild(kiss);
 
-  kiss.onclick = () => {
-
-    score++;
-
-    meter.style.width = (score*20)+"%";
-
-    reaction.innerHTML =
-      reactions[Math.floor(Math.random()*reactions.length)];
-
-    kiss.remove();
-
-    if(navigator.vibrate){
-      navigator.vibrate(35);
-    }
-
-    // tiny face bounce
-    face.style.transform += " scale(1.08)";
-
-    setTimeout(()=>{
-      randomMove();
-    },120);
-
-    // final moment
-    if(score >= 5){
-      finishScene();
-    }
-  };
-
   setTimeout(()=>{
     kiss.remove();
-  },2200);
+  },800);
 }
 
-function startGame(){
+// tap face
+face.addEventListener("click", catchFace);
+face.addEventListener("touchstart", catchFace);
 
-  if(running) return;
-  running = true;
+function catchFace(e){
 
-  btn.classList.add("hidden");
+  if(gameFinished) return;
 
-  subtitle.innerHTML =
-    "Catch them before they disappear 😚";
+  catches++;
+
+  progress.style.width = (catches*20)+"%";
+
+  reaction.innerHTML =
+    reactions[Math.floor(Math.random()*reactions.length)];
+
+  const rect = face.getBoundingClientRect();
+
+  createKiss(
+    rect.left + rect.width/2,
+    rect.top + rect.height/2
+  );
+
+  // bounce
+  face.style.transform = "scale(1.08)";
+
+  setTimeout(()=>{
+    face.style.transform = "scale(1)";
+  },150);
 
   if(navigator.vibrate){
-    navigator.vibrate([40,50,40]);
+    navigator.vibrate(30);
   }
 
-  randomMove();
+  if(catches >= 5){
 
-  const interval = setInterval(()=>{
+    finishGame();
 
-    createKiss();
-    randomMove();
+  }else{
 
-    if(score >= 5){
-      clearInterval(interval);
-    }
-
-  },700);
+    moveFace();
+  }
 }
 
-function finishScene(){
+function finishGame(){
 
-  document.body.style.background =
-    "linear-gradient(160deg,#9b4d74,#d989ab,#ffdce7)";
+  gameFinished = true;
 
-  subtitle.innerHTML = "Mwaaaahhh... 🤍";
+  subtitle.innerHTML =
+    "Mwaaaahhh... 🤍";
 
   reaction.innerHTML = "";
 
-  face.style.transform = "translate(0,0)";
-  face.classList.add("final");
+  face.style.left = "50%";
+  face.style.top = "50%";
 
-  msg.classList.add("show");
+  face.style.transform =
+    "translate(-50%, -50%)";
+
+  face.classList.add("final-face");
+
+  document.body.classList.add("dark-romantic");
+
+  setTimeout(()=>{
+    message.classList.add("show");
+  },700);
+
+  setTimeout(()=>{
+    holdArea.classList.add("show");
+  },1400);
 
   if(navigator.vibrate){
-    navigator.vibrate(120);
+    navigator.vibrate(100);
   }
 }
+
+// HOLD TO KISS
+
+function startHold(){
+
+  holdValue = 0;
+
+  holdInterval = setInterval(()=>{
+
+    holdValue += 2;
+
+    holdFill.style.width = holdValue+"%";
+
+    face.style.transform =
+      `translate(-50%, -50%) scale(${1 + holdValue/200})`;
+
+    if(navigator.vibrate && holdValue % 20 === 0){
+      navigator.vibrate(15);
+    }
+
+    if(holdValue >= 100){
+
+      clearInterval(holdInterval);
+
+      finalKiss();
+    }
+
+  },40);
+}
+
+function stopHold(){
+
+  clearInterval(holdInterval);
+
+  if(holdValue < 100){
+
+    holdValue = 0;
+
+    holdFill.style.width = "0%";
+
+    face.style.transform =
+      "translate(-50%, -50%) scale(1.03)";
+  }
+}
+
+function finalKiss(){
+
+  subtitle.innerHTML =
+    "Mwaaaaaahhh 💋";
+
+  message.innerHTML =
+    "I miss you, ponnu... 🤍<br><br>" +
+    "So until I can kiss you for real,<br>" +
+    "you'll have to keep this one.";
+
+  document.body.style.background =
+    "radial-gradient(circle at center,#ffd1df 0%,#c96b97 50%,#5f2746 100%)";
+
+  if(navigator.vibrate){
+    navigator.vibrate([80,40,80]);
+  }
+}
+
+holdBtn.addEventListener("mousedown", startHold);
+holdBtn.addEventListener("mouseup", stopHold);
+holdBtn.addEventListener("mouseleave", stopHold);
+
+holdBtn.addEventListener("touchstart", startHold);
+holdBtn.addEventListener("touchend", stopHold);
+
 </script>
 
 </body>
